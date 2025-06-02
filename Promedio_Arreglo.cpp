@@ -8,12 +8,9 @@ double Promedio(double arreglo_promedio[15], int i)
     {
         printf("Ingresa la edad del %d alumno: ", i + 1);
         scanf("%lf", &arreglo_promedio[i]);
-    }
-
-    for (i = 0; i < 15; i++)
-    {
         suma += arreglo_promedio[i];
     }
+
     return suma / 15;
 }
 
