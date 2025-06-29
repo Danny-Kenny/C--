@@ -6,7 +6,8 @@
 int main()
 {
     int Matriz[3][4];
-    int i, j, Promedio, suma = 0, positivo = 0, pares = 0;
+    int i, j, suma = 0, positivo = 0, pares = 0;
+    double Promedio;
 
     printf("Ingrese los valores de la matriz 3x4:\n");
     for (i = 0; i < 3; i++)
@@ -33,10 +34,10 @@ int main()
         for (j = 0; j < 4; j++)
         {
             suma += Matriz[i][j];
-            Promedio = suma / 12;
         }
     }
-    printf("El promedio de los datos de la matriz es: %d\n", Promedio);
+    Promedio = suma / 12.0;
+    printf("El promedio de los datos de la matriz es: %.2lf\n", Promedio);
 
     for (i = 0; i < 3; i++)
     {
