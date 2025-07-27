@@ -116,6 +116,7 @@ int main()
         }
     }
 
+    pivote = Aumentada[2][2];
     for (j = 0; j < 4; j++)
     {
         Aumentada[2][j] /= pivote;
