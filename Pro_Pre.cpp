@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <list>
+#include <queue>
 
 // *** Funcion para Gauss Jordan *** //
 int Verificacion(double Aumentada[3][4])
@@ -721,31 +722,171 @@ void imprimirLista(const std::list<int> &lista)
     }
 }
 
-void invertirlista(std::list<int> &lista)
+void llenado(std::list<int> &lista)
 {
-    int i, n, valor;
+    int n, valor;
     lista.clear();
 
     printf("Cuantos elementos quieres agregar: ");
     scanf("%d", &n);
 
-    for (i = 0; i < n; i++)
+    printf("Ingrese los %d elementos:\n", n);
+    for (int i = 0; i < n; ++i)
     {
-        printf("Ingrese el elemento %d: ", i + 1);
+        printf("Elemento %d: ", i + 1);
         scanf("%d", &valor);
         lista.push_back(valor);
     }
+}
+
+void invertirlista(std::list<int> &lista)
+{
+    int i;
+    llenado(lista);
 
     printf("Lista original:\n");
     imprimirLista(lista);
+
+    lista.reverse();
+
     printf("Lista inversa:\n");
     imprimirLista(lista);
+}
+
+void ordenarlista(std::list<int> &lista)
+{
+    int i;
+    llenado(lista);
+
+    lista.sort();
+    imprimirLista(lista);
+}
+
+void concatenar(std::list<int> &lista)
+{
+    std::list<int> lista2;
+    int i, n2, valor;
+    llenado(lista);
+
+    printf("Cuantos elementos tendra tu segunda lista: ");
+    scanf("%d", &n2);
+    printf("\tLlenado de la 2da lista\n");
+    for (i = 0; i < n2; i++)
+    {
+        printf("Valor del elemento %d: ", i + 1);
+        scanf("%d", &valor);
+        lista2.push_back(valor);
+    }
+
+    lista.splice(lista.end(), lista2);
+    imprimirLista(lista);
+}
+
+void contar(std::list<int> &lista)
+{
+    int conta = 0, valor;
+    llenado(lista);
+
+    printf("Cual es el valor que desea buscar: ");
+    scanf("%d", &valor);
+
+    for (int i : lista)
+    {
+        if (i == valor)
+        {
+            conta++;
+        }
+    }
+
+    printf("El valor %d aparece %d vez(veces) en la lista\n", valor, conta);
+}
+
+// *** Funciones de Colas *** //
+void llenadoCola(std::queue<int> &cola, int n)
+{
+    int i, valor;
+    for (i = 0; i < n; i++)
+    {
+        printf("Ingrese el valor del elemento %d: ", i + 1);
+        scanf("%d", &valor);
+        cola.push(valor);
+    }
+}
+
+void sumatoria(std::queue<int> &cola1, std::queue<int> &cola2)
+{
+    int n, suma = 0;
+
+    printf("Que tamano tienen tus colas: ");
+    scanf("%d", &n);
+    printf("\tLlenado de 1ra Cola...\n");
+    llenadoCola(cola1, n);
+    printf("\tLlenado de 2da Cola...\n");
+    llenadoCola(cola2, n);
+
+    while (!cola1.empty())
+    {
+        suma += cola1.front();
+        cola1.pop();
+    }
+    while (!cola2.empty())
+    {
+        suma += cola2.front();
+        cola2.pop();
+    }
+
+    printf("La suma total de las colas es: %d\n", suma);
+}
+
+void ordenarCola(std::queue<int> &cola)
+{
+    int n, i = 0, j, temp;
+
+    printf("Que tamano tiene tu cola: ");
+    scanf("%d", &n);
+
+    int arre[n];
+    llenadoCola(cola, n);
+
+    while (!cola.empty() && i < n)
+    {
+        arre[i++] = cola.front();
+        cola.pop();
+    }
+
+    for (i = 0; i < n; i++)
+    {
+        for (j = 0; j < n - i - 1; j++)
+        {
+            if (arre[j] > arre[j + 1])
+            {
+                temp = arre[j];
+                arre[j] = arre[j + 1];
+                arre[j + 1] = temp;
+            }
+        }
+    }
+
+    for (int elemento : arre)
+    {
+        cola.push(elemento);
+    }
+
+    printf("\nLa cola ordenada: ");
+    while (!cola.empty())
+    {
+        printf("%d ", cola.front());
+        cola.pop();
+    }
+    printf("\n");
 }
 
 int main()
 {
     int op, Op2, Rep;
     std::list<int> Lista;
+    std::queue<int> Cola;
+    std::queue<int> Cola2;
 
     do
     {
@@ -871,16 +1012,13 @@ int main()
                 invertirlista(Lista);
                 break;
             case 2:
-
+                ordenarlista(Lista);
                 break;
             case 3:
-
+                concatenar(Lista);
                 break;
             case 4:
-
-                break;
-            case 5:
-
+                contar(Lista);
                 break;
             default:
                 printf("Opcion invalida.\n");
@@ -888,7 +1026,22 @@ int main()
             }
             break;
         case 4:
-            // Código para cola
+            printf("--- Programas de Colas ---\n");
+            printf("1.- Sumatoria de colas\n");
+            printf("2.- Ordenar de menor a mayor\n");
+            printf("Elige la opcion a realizar: ");
+            scanf("%d", &Op2);
+            switch (Op2)
+            {
+            case 1:
+                sumatoria(Cola, Cola2);
+                break;
+            case 2:
+                ordenarCola(Cola);
+                break;
+            default:
+                break;
+            }
             break;
         case 5:
             // Código para pila
