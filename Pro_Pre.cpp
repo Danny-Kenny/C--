@@ -1,6 +1,86 @@
 #include <stdio.h>
 #include <list>
 #include <queue>
+#include <stack>
+#include <stdlib.h>
+#include <string.h>
+
+// *** Estructura de Arbol ***//
+struct Nodo
+{
+    char *valor;
+    struct Nodo *izquierdo;
+    struct Nodo *derecho;
+};
+
+// Creacion de un nuevo nodo
+struct Nodo *crearNodo(const char *valor)
+{
+    struct Nodo *nuevoNodo = (struct Nodo *)malloc(sizeof(struct Nodo));
+    if (nuevoNodo == NULL)
+    {
+        printf("Error: No se asigno memoria para el nodo.\n");
+        exit(1);
+    }
+
+    // Se asigna memoria para el valor (la cadena de texto) y se copia.
+    nuevoNodo->valor = (char *)malloc(strlen(valor) + 1); // +1 para el terminador nulo '\0'
+    if (nuevoNodo->valor == NULL)
+    {
+        printf("Error: No se asigno memoria para el valor del nodo.\n");
+        free(nuevoNodo);
+        exit(1);
+    }
+    strcpy(nuevoNodo->valor, valor);
+
+    nuevoNodo->izquierdo = NULL;
+    nuevoNodo->derecho = NULL;
+    return nuevoNodo;
+}
+
+// Construccion del arbol desde cero
+struct Nodo *consArbolBi(int numNodos)
+{
+    if (numNodos <= 0)
+    {
+        return NULL;
+    }
+
+    struct Nodo *raiz;
+    int i, frente = 0, final = 0;
+    char valor[256]; // Buffer para almacenar la entrada del usuario
+
+    printf("Ingrese el valor de la raiz: ");
+    scanf("%s", valor);
+    raiz = crearNodo(valor);
+
+    struct Nodo *cola[numNodos];
+    cola[final++] = raiz;
+
+    for (i = 0; i < numNodos; i++)
+    {
+        struct Nodo *Actual = cola[frente++];
+
+        // Hijo izquierdo
+        if (2 * i + 1 < numNodos)
+        {
+            printf("Ingrese el valor del hijo izquierdo de %s: ", Actual->valor);
+            scanf("%s", valor);
+            Actual->izquierdo = crearNodo(valor);
+            cola[final++] = Actual->izquierdo;
+        }
+
+        // Hijo derecho
+        if (2 * i + 2 < numNodos)
+        {
+            printf("Ingrese el valor del hijo derecho de %s: ", Actual->valor);
+            scanf("%s", valor);
+            Actual->derecho = crearNodo(valor);
+            cola[final++] = Actual->derecho;
+        }
+    }
+    return raiz;
+}
 
 // *** Funcion para Gauss Jordan *** //
 int Verificacion(double Aumentada[3][4])
@@ -881,12 +961,170 @@ void ordenarCola(std::queue<int> &cola)
     printf("\n");
 }
 
+void multiCola(std::queue<int> &cola)
+{
+    int n, resultado = 1;
+    printf("Que tamano tiene tu cola: ");
+    scanf("%d", &n);
+    llenadoCola(cola, n);
+
+    while (!cola.empty())
+    {
+        resultado *= cola.front();
+        cola.pop();
+    }
+    printf("El resultado de la multiplicacion es: %d\n", resultado);
+}
+
+void llenarPila(std::stack<int> &Stack, int cantidad)
+{
+    int num, i;
+    printf("Ingrese cuantos espacios tendra la pila: ");
+    scanf("%d", &cantidad);
+    for (i = 0; i < cantidad; i++)
+    {
+        printf("Valor del %d: ", i + 1);
+        scanf("%d", &num);
+        Stack.push(num);
+    }
+}
+
+void mostraPila(std::stack<int> &Stack)
+{
+    printf("La pila contiene:\n");
+    while (!Stack.empty())
+    {
+        printf("|%d| ", Stack.top());
+        Stack.pop();
+    }
+    printf("\n");
+}
+
+void orderPila(std::stack<int> &Stack)
+{
+    llenarPila(Stack, 0);
+
+    if (Stack.empty())
+    {
+        return;
+    }
+
+    std::vector<int> Temp;
+    while (!Stack.empty())
+    {
+        Temp.push_back(Stack.top());
+        Stack.pop();
+    }
+
+    int i, j, n = Temp.size();
+    for (i = 0; i < n - 1; i++)
+    {
+        for (j = 0; j < n - i - 1; j++)
+        {
+            if (Temp[j] < Temp[j + 1])
+            {
+                std::swap(Temp[j], Temp[j + 1]);
+            }
+        }
+    }
+
+    for (int valor : Temp)
+    {
+        Stack.push(valor);
+    }
+
+    mostraPila(Stack);
+}
+
+void sumarPila(std::stack<int> &Stack, std::stack<int> &Stack2)
+{
+    printf("--- Llenado de la 1er Pila ---\n");
+    llenarPila(Stack, 0);
+
+    printf("--- Llenado de la 2da Pila ---\n");
+    llenarPila(Stack2, 0);
+
+    std::stack<int> Resultado;
+    while (!Stack.empty() && !Stack2.empty())
+    {
+        Resultado.push(Stack.top() + Stack2.top());
+        Stack.pop();
+        Stack2.pop();
+    }
+    printf("La suma de las pilas es: \n");
+    mostraPila(Resultado);
+}
+
+void multiPila(std::stack<int> &Stack, std::stack<int> &Stack2)
+{
+    printf("--- Llenado de la 1er Pila ---\n");
+    llenarPila(Stack, 0);
+
+    printf("--- Llenado de la 2da Pila ---\n");
+    llenarPila(Stack2, 0);
+
+    std::stack<int> Resultado;
+    while (!Stack.empty() && !Stack2.empty())
+    {
+        Resultado.push(Stack.top() * Stack2.top());
+        Stack.pop();
+        Stack2.pop();
+    }
+    printf("El resultado de la multiplicacion es: \n");
+    mostraPila(Resultado);
+}
+
+void liberarArbol(struct Nodo *nodo)
+{
+    if (nodo == NULL)
+    {
+        return;
+    }
+    liberarArbol(nodo->izquierdo);
+    liberarArbol(nodo->derecho);
+    free(nodo->valor);
+    free(nodo);
+}
+
+void PreOrden(struct Nodo *nodo)
+{
+    if (nodo != NULL)
+    {
+        printf("|%s| ", nodo->valor);
+        PreOrden(nodo->izquierdo);
+        PreOrden(nodo->derecho);
+    }
+}
+
+void InOrden(struct Nodo *nodo)
+{
+    if (nodo != NULL)
+    {
+        InOrden(nodo->izquierdo);
+        printf("|%s| ", nodo->valor);
+        InOrden(nodo->derecho);
+    }
+}
+
+void PosOrden(struct Nodo *nodo)
+{
+    if (nodo != NULL)
+    {
+        PosOrden(nodo->izquierdo);
+        PosOrden(nodo->derecho);
+        printf("|%s| ", nodo->valor);
+    }
+}
+
 int main()
 {
-    int op, Op2, Rep;
+    int op, Op2, Rep, numNodos;
     std::list<int> Lista;
     std::queue<int> Cola;
     std::queue<int> Cola2;
+    std::stack<int> Stack;
+    std::stack<int> Stack2;
+    struct Nodo *raiz;
 
     do
     {
@@ -1029,6 +1267,7 @@ int main()
             printf("--- Programas de Colas ---\n");
             printf("1.- Sumatoria de colas\n");
             printf("2.- Ordenar de menor a mayor\n");
+            printf("3.- Multiplicacion de elementos\n");
             printf("Elige la opcion a realizar: ");
             scanf("%d", &Op2);
             switch (Op2)
@@ -1039,15 +1278,79 @@ int main()
             case 2:
                 ordenarCola(Cola);
                 break;
+            case 3:
+                multiCola(Cola);
+                break;
             default:
+                printf("Opcion invalida\n");
                 break;
             }
             break;
         case 5:
-            // Código para pila
+            printf("1.- Ordenamiento por burbuja\n");
+            printf("2.- Sumar 2 pilas\n");
+            printf("3.- Multiplicar 2 pilas\n");
+            printf("Elige la opcion a realizar: ");
+            scanf("%d", &Op2);
+            switch (Op2)
+            {
+            case 1:
+                orderPila(Stack);
+                break;
+            case 2:
+                sumarPila(Stack, Stack2);
+                break;
+            case 3:
+                multiPila(Stack, Stack2);
+                break;
+            default:
+                printf("Opcion invalida\n");
+                break;
+            }
             break;
         case 6:
-            // Código para árbol
+            printf("\t --- Arboles Binarios Perfectos ---\n");
+            printf("1.- Pre-Orden\n");
+            printf("2.- Pos-Orden\n");
+            printf("3.- In-Orden\n");
+            printf("Elige la opcion a realizar: ");
+            scanf("%d", &Op2);
+            switch (Op2)
+            {
+            case 1:
+                printf("Ingrese el peso del arbol (2^h - 1): ");
+                scanf("%d", &numNodos);
+
+                raiz = consArbolBi(numNodos);
+                printf("\nEl arbol binario construido en pre-orden es:");
+                PreOrden(raiz);
+                printf("\n");
+                liberarArbol(raiz);
+                break;
+            case 2:
+                printf("Ingrese el peso del arbol (2^h - 1): ");
+                scanf("%d", &numNodos);
+
+                raiz = consArbolBi(numNodos);
+                printf("\nEl arbol binario construido en pos-orden es:");
+                PosOrden(raiz);
+                printf("\n");
+                liberarArbol(raiz);
+                break;
+            case 3:
+                printf("Ingrese el peso del arbol (2^h - 1): ");
+                scanf("%d", &numNodos);
+
+                raiz = consArbolBi(numNodos);
+                printf("\nEl arbol binario construido en in-orden es:");
+                InOrden(raiz);
+                printf("\n");
+                liberarArbol(raiz);
+                break;
+            default:
+                printf("Opcion invalida\n");
+                break;
+            }
             break;
         default:
             printf("Opcion invalida.\n");
